@@ -22,7 +22,7 @@ function getQueryString(name) {     //获取url参数
   return null;
 }
 function ajaxUrl(url){
-    var ajaxUrl = "http://lanhai.c63.top" + url;
+    var ajaxUrl = "http://10.231.135.147" + url;
     return ajaxUrl
 }
 function ajaxFun(url, data, success, faill, compelete){
