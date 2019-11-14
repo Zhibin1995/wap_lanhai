@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="CH">
+<head>
+    <title>详情页</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" type="text/css" href="css/reset.css" />
+    <link rel="stylesheet" type="text/css" href="css/style.css?v=4" />
+    <script type="text/javascript" src="js/jquery-1.8.3.min.js"></script>
+    <script type="text/javascript" src="js/layer_mobile/layer.js"></script>
+    <script type="text/javascript" src="js/common.js"></script>
+</head>
+<body>
+    <link rel="stylesheet" href="css/swiper.css">
+    <div class="swiper-container detailBannar">
+        <a href="" class="detailButton1 dn">全景看房</a>
+        <div class="swiper-wrapper">
+            
+        </div>
+        <div class="swiper-pagination"></div>
+    </div>
+    <div class="detailPage">
+
+    </div>
+    <div class="dropload-down" style="padding-top:1rem"><div class="dropload-load"><img class="loading rotate" src="images/loading.png" alt="">正在加载数据</div></div>
+<div class="footerText">Copyright  龙湖·蓝海引擎 @ 版权所有 All Rights Reserved</div>
+<script src="js/swiper.js"></script>
+<script>
+function room(data){
+    var reselt = ''
+    for (var j = 0; j <= data.length - 1;j++) {
+        reselt += '<div class="smallItem imgPrev"><img src="'+data[j].img_url+'" alt=""><p>'+data[j].name+'</p></div>'
+    };
+    return reselt
+}
+function tags(data){
+    var reselt = ''
+    for (var z = 0; z <= data.length - 1;z++) {
+        reselt += '<div class="fleft"><img src="'+data[z].icon+'" alt="" class="icon"><p>'+data[z].name+'</p></div>'
+    };
+    return reselt
+}
+function service_facility(data){
+    var reselt = ''
+    for (var a = 0; a <= data.length - 1;a++) {
+        reselt += '<div class="smallItem imgPrev2"><img src="'+data[a].img_url+'" alt="" /><p>'+data[a].name+'</p></div>'
+    };
+    return reselt
+}
+function people(data){
+    var reselt = ''
+    for (var a = 0; a <= data.length - 1;a++) {
+        reselt += '<div class="smallItem"><img src="'+data[a].photo+'" alt=""><div class="bottom float"><div class="name"><p>'+data[a].name+'</p><p class="phone">'+data[a].phone+'</p></div><a href="tel:'+data[a].phone+'"><img src="images/phone.png" class="phoneIcon" alt=""></a></div></div>'
+    };
+    return reselt
+}
+function goMap(data) {
+    return "http://api.map.baidu.com/geocoder?address="+data+"&output=html"
+}
+ajaxFun("/api/v1/lanhai/detail", {"id":getQueryString("id")}, function(res){
+    var swiper = ''
+    var swiperData = res.data.img
+    if (res.data.vr_url != ""){
+        $(".detailBannar .detailButton1").css('display', 'block').attr('href', res.data.vr_url);
+    }
+    for (var i = 0; i <= swiperData.length - 1; i++) {
+        swiper += '<div class="swiper-slide"><img src="'+swiperData[i]+'" alt="" /></div>'
+    };
+    $(".swiper-wrapper").html(swiper)
+    var swiperH = new Swiper('.swiper-container', {
+        pagination: '.swiper-pagination',
+        paginationClickable: true,
+        spaceBetween: 50,
+        autoplay: 4000,
+        loop:true
+    });
+    var pageData = res.data
+    $("title").html(pageData.name)
+    var detail = `<div class="detailPage">
+        <div class="dec">
+            <h3>${pageData.name}</h3>
+            <div class="content">
+                <div id="topContent">${pageData.desc}</div>
+            </div>
+            <div class="more"></div>
+        </div>
+        <div class="item item1">
+            <div class="title float">
+                <p>基本信息</p>
+                <div class="iconcenter">
+                    <img src="images/icon_what.png" alt="" />
+                </div>
+            </div>
+            <div class="content">
+                <a href="${goMap(pageData.address)}" class="goMap"></a>
+                <p class="size"><span class="blue">建筑面积：</span>${pageData.project_area}</p>
+                <p class="price"><span class="blue">价格区间：</span>${pageData.price_range}元/平房米/月</p>
+                <p class="phone"><span class="blue">招商电话：</span>${pageData.contact}</p>
+                <p class="address"><span class="blue">项目地址：</span>${pageData.address}</p>
+            </div>
+        </div>
+        <div class="item item2">
+            <div class="title float">
+                <p>可租房源</p>
+                <div class="iconcenter">
+                    <img src="images/icon_what.png" alt="" />
+                </div>
+            </div>
+            <div class="content">
+                <div class="box">${room(pageData.room)}</div>
+            </div>
+        </div>
+        <div class="item item3">
+            <div class="title float">
+                <p>空间设施</p>
+                <div class="iconcenter">
+                    <img src="images/icon_what.png" alt="" />
+                </div>
+            </div>
+            <div class="content fleft">${tags(pageData.tags)}</div>
+        </div>
+        <div class="item item2">
+            <div class="title float">
+                <p>服务设施</p>
+                <div class="iconcenter">
+                    <img src="images/icon_what.png" alt="" />
+                </div>
+            </div>
+            <div class="text">${pageData.service_facility}</div>
+            <div class="content content2">
+                <div class="box">${service_facility(pageData.service_facility_arr)}</div>
+            </div>
+        </div>
+        <div class="item item4">
+            <div class="tab float">
+                <p class="active">办公</p>
+                <p>工区</p>
+                <p>配套</p>
+                <p>服务</p>
+            </div>
+            <div class="content">
+                <div class="contentItem active">${pageData.work}</div>
+                <div class="contentItem">${pageData.park}</div>
+                <div class="contentItem">${pageData.append}</div>
+                <div class="contentItem">${pageData.service}</div>
+            </div>
+        </div>
+        <div class="item item2 item5">
+            <div class="title float">
+                <p>招商人员</p>
+                <div class="iconcenter">
+                    <img src="images/icon_what.png" alt="" />
+                </div>
+            </div>
+            <div class="content content3">
+                <div class="box">${people(pageData.people)}</div>
+            </div>
+        </div>
+    </div>`
+    $(".detailPage").html(detail)
+    $(".dropload-down").css('display', 'none');
+    var more = true
+    $(".more").click(function(event) {
+        if(more) {
+            $(".detailPage .dec .content").animate({"max-height":$("#topContent").height()+"px"}, 500)
+            $(this).addClass('active')
+            more = false
+        } else {
+            $(".detailPage .dec .content").animate({"max-height":"2.75rem"}, 500)
+            more = true
+            $(this).removeClass('active')
+        }
+    });
+    $(".detailPage .item4 .tab p").click(function(event) {
+        $(this).addClass('active').siblings().removeClass('active')
+        var index = $(this).index()
+        $(".detailPage .item4 .contentItem").eq(index).addClass('active').siblings().removeClass('active')
+    });
+    var list = pageData.room
+    var urllist = []; // 存放所有图片路径的数组
+    list.forEach(function(item,index){
+        urllist.push(item.img_url)
+    })
+    // 循环节点，将每一个节点的图片路径存入数组、绑定click事件
+    $(".imgPrev").click(function(event) {
+        var src = $(this).children('img').attr('src')
+        WeixinJSBridge.invoke("imagePreview", {
+            urls: urllist, // 路径数组
+            current: src, // 当前需要显示的图片路径
+        })
+    });
+
+    var facilityList = pageData.service_facility_arr
+    var urllist2 = []; // 存放所有图片路径的数组
+    facilityList.forEach(function(item,index){
+        urllist2.push(item.img_url)
+    })
+    // 循环节点，将每一个节点的图片路径存入数组、绑定click事件
+    $(".imgPrev2").click(function(event) {
+        var src = $(this).children('img').attr('src')
+        WeixinJSBridge.invoke("imagePreview", {
+            urls: urllist2, // 路径数组
+            current: src, // 当前需要显示的图片路径
+        })
+    });
+}, function(err){
+    layer.open({
+        content: err.msg
+        ,skin: 'msg'
+        ,time: 2
+    });
+})
+    
+</script>
+</body>
+</html>
